@@ -15,6 +15,8 @@ import (
 	"github.com/kidoman/embd"
 )
 
+const timeout = 10000000
+
 type digitalPin struct {
 	id string
 	n  int
@@ -165,6 +167,8 @@ func (p *digitalPin) TimePulse(state int) (time.Duration, error) {
 		aroundState = embd.High
 	}
 
+	// initTime := time.Now()
+
 	// Wait for any previous pulse to end
 	for {
 		v, err := p.read()
@@ -175,6 +179,11 @@ func (p *digitalPin) TimePulse(state int) (time.Duration, error) {
 		if v == aroundState {
 			break
 		}
+
+		// if time.Since(initTime).Nanoseconds() > timeout {
+		// 	log.Println("LOOP 1")
+		// 	return 0, errors.New("Timeout error")
+		// }
 	}
 
 	// Wait until ECHO goes high
@@ -187,6 +196,11 @@ func (p *digitalPin) TimePulse(state int) (time.Duration, error) {
 		if v == state {
 			break
 		}
+
+		// if time.Since(initTime).Nanoseconds() > timeout {
+		// 	log.Println("LOOP 2")
+		// 	return 0, errors.New("Timeout error")
+		// }
 	}
 
 	startTime := time.Now() // Record time when ECHO goes high
@@ -201,6 +215,11 @@ func (p *digitalPin) TimePulse(state int) (time.Duration, error) {
 		if v == aroundState {
 			break
 		}
+
+		// if time.Since(initTime).Nanoseconds() > timeout {
+		// 	log.Println("LOOP 3")
+		// 	return 0, errors.New("Timeout error")
+		// }
 	}
 
 	return time.Since(startTime), nil // Calculate time lapsed for ECHO to transition from high to low
